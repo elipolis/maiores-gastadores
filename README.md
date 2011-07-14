@@ -8,3 +8,4 @@ Contribuidores
 --------------
 * [Pedro Limeira](https://github.com/prmlimeira)
 * [Emerson Vinicius](https://github.com/emersonvinicius)
+* [Capi Etheriel](https://github.com/barraponto)
