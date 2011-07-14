@@ -13,8 +13,10 @@ SENADO_URL = "http://www.senado.gov.br/transparencia"
 resultPage = open("resultados.html","a")
 
 initHtml = '''
-  <html><head><title>Maiores Gastadores</title></head><body>
-  <h1 style="text-align: center"><b>Gastos totais de senadores desde o inicio de seus mandatos</b></h1>
+  <!DOCTYPE html><html lang="pt"><head><title>Maiores Gastadores</title></head><body>
+  <style>h1{text-align: center;} article{width: 960px; margin: 0 auto;} li {border-bottom: 1px solid black; padding: 10px 0;} footer {text-align: center;}</style>
+  <article>
+  <h1>Gastos totais de senadores desde o inicio de seus mandatos</h1>
   <ul>
 '''
 
@@ -69,8 +71,8 @@ for senador in senadores:
             gastos[senadorName] += total
 
 for gasto in gastos:
-  resultPage.write('<li style="border-bottom: 1px solid black; padding: 10px 0 "> ' + str(gasto) + '     R$ ' + str(gastos[gasto]) + '</li>' )
+  resultPage.write('<li> ' + str(gasto) + '     R$ ' + str(gastos[gasto]) + '</li>' )
 
-resultPage.write('</ul><footer style="text-align: center">resultado da execucao do script MaioresGastadores.py</footer></body></html>')
+resultPage.write('</ul><footer>resultado da execucao do script MaioresGastadores.py</footer></article></body></html>')
 
 webbrowser.open("resultados.html")
