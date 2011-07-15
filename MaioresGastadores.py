@@ -1,16 +1,25 @@
 # Feito por Pedro Limeira.
-# crawler para detectar gastos de senadores com passagem aereas.
+# crawler para detectar gastos de senadores com CEAPS
 # Site utilizado http://www.senado.gov.br/transparencia/
 
-import urllib2,urllib,webbrowser
+import urllib2,urllib,webbrowser,json
 from BeautifulSoup import BeautifulSoup
 
 def get_total(val):
   return float(str(val).replace("R$ ","").replace('.','').replace(',','.'))
 
+def get_ranking(gastos_dic):
+  ranking = []
+  for gasto in gastos_dic.keys():
+      ranking.append((float(gastos_dic[gasto]),gasto))
+  ranking.sort(reverse=True)
+  return ranking
+  
+
 SENADO_URL = "http://www.senado.gov.br/transparencia"
 
 resultPage = open("resultados.html","a")
+resultJSON = open("resultados.json","w")
 
 initHtml = '''
   <!DOCTYPE html><html lang="pt"><head><title>Maiores Gastadores</title></head><body>
@@ -70,9 +79,13 @@ for senador in senadores:
             print '     ' + str(mes.contents[0]) + ' : ' + str(_total)
             gastos[senadorName] += total
 
-for gasto in gastos:
-  resultPage.write('<li> ' + str(gasto) + '     R$ ' + str(gastos[gasto]) + '</li>' )
+for gasto in get_ranking(gastos):
+  resultPage.write('<li> ' + str(gasto[1]) + '     R$ ' + str(gasto[0]) + '</li>' )
 
 resultPage.write('</ul><footer>resultado da execucao do script MaioresGastadores.py</footer></article></body></html>')
+resultJSON.write(json.JSONEncoder().encode(gastos))
+
+resultPage.close()
+resultJSON.close()
 
 webbrowser.open("resultados.html")

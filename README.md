@@ -1,7 +1,7 @@
-Maiores Gastadores de Minas Gerais
+Maiores Gastadores do Senado Federal
 ==================================
 
-Crawler para detectar gastos de senadores com passagem aereas.
+Crawler para detectar gastos de senadores com CEAPS.
 Site utilizado [http://www.senado.gov.br/transparencia/](http://www.senado.gov.br/transparencia/)
 
 Contribuidores
