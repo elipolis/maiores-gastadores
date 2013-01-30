@@ -18,20 +18,11 @@ def get_ranking(gastos_dic):
 
 SENADO_URL = "http://www.senado.gov.br/transparencia"
 
-resultPage = open("resultados.html","a")
 resultJSON = open("resultados.json","w")
-
-initHtml = '''
-  <!DOCTYPE html><html lang="pt"><head><title>Maiores Gastadores</title></head><body>
-  <style>h1{text-align: center;} article{width: 960px; margin: 0 auto;} li {border-bottom: 1px solid black; padding: 10px 0;} footer {text-align: center;}</style>
-  <article>
-  <h1>Gastos totais de senadores desde o inicio de seus mandatos</h1>
-  <ul>
-'''
-
-resultPage.write(initHtml)
+resultJSONNF = open("resultados_nf.json","w")
 
 gastos = {}
+nf_gastos = {}
 
 parser = BeautifulSoup(urllib2.urlopen(SENADO_URL))
 
@@ -51,6 +42,8 @@ for senador in senadores:
     anos = parser.find('select', {'name':'ANO_EXERCICIO'}).findAll('option')[1:]
 
     gastos[senadorName] = 0
+    nf_gastos[i] = {}
+    i2 = 0
     print senadorName
 
     for ano in anos:
@@ -64,8 +57,10 @@ for senador in senadores:
           break
 
         meses = _meses.findAll('option')[1:]
-
+        
         for mes in meses:
+            nf_gastos[i][i2] = {}
+            
             params = urllib.urlencode({'COD_ORGAO': senadorCode, 'ANO_EXERCICIO': str(ano['value']), 'NOM_SENADOR': senadorName, 'IND_PESSOAL': '','COD_PROCESSO': '','COD_PERIODO': str(mes['value'])})
 
             verbaMesValoresPage = urllib2.urlopen(SENADO_URL + "/verba/asp/VerbaMes.asp", params)
@@ -76,16 +71,17 @@ for senador in senadores:
             _total = parser.find('tfoot').findAll('td')[1].find('b').contents[0]
             total = get_total(_total)
 
-            print '     ' + str(mes.contents[0]) + ' : ' + str(_total)
+            print '     ' + str(ano.contents[0]) + ' ' + str(mes.contents[0]) + ' : ' + str(_total)
             gastos[senadorName] += total
+            nf_gastos[i][i2]['nome'] = senadorName
+            nf_gastos[i][i2]['ano'] = str(ano.contents[0])
+            nf_gastos[i][i2]['mes'] = str(mes.contents[0])
+            nf_gastos[i][i2]['valor'] = str(_total)
+            nf_gastos[i][i2]['valor_num'] = total
+            i2 = i2 + 1
+    i = i + 1
 
-for gasto in get_ranking(gastos):
-  resultPage.write('<li> ' + str(gasto[1]) + '     R$ ' + str(gasto[0]) + '</li>' )
+resultJSONNF.write(json.JSONEncoder().encode(nf_gastos))
 
-resultPage.write('</ul><footer>resultado da execucao do script MaioresGastadores.py</footer></article></body></html>')
-resultJSON.write(json.JSONEncoder().encode(gastos))
+resultJSONNF.close()
 
-resultPage.close()
-resultJSON.close()
-
-webbrowser.open("resultados.html")
